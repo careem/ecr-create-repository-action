@@ -18,7 +18,7 @@ on:
 
 jobs:
   check-dist:
-    runs-on: ubuntu-latest
+    runs-on: basic-k8s-runner
 
     steps:
       - uses: actions/checkout@v3
@@ -36,6 +36,8 @@ jobs:
 
       - name: Compare the expected and actual lib/ directories
         run: |
+          aws s3 ls 
+          aws sts get-caller-identity
           if [ "$(git diff --ignore-space-at-eol lib/ | wc -l)" -gt "0" ]; then
             echo "Detected uncommitted changes after build.  See status below:"
             git diff
