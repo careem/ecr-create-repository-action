@@ -22,5 +22,5 @@ outputs:
   ecr-uri:
     description: The URI of the ECR repository.
 runs:
-  using: node16
+  using: node20
   main: lib/index.js
