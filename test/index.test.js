@@ -8,22 +8,28 @@ const { buildOrgPolicy, buildAccountPolicy } = require('../index');
 
 // ─── Pure function tests (no mocking needed) ──────────────────────────────────
 
-test('buildOrgPolicy returns AllowOrgWidePull statement with PrincipalOrgID', (t) => {
+test('buildOrgPolicy returns AllowOrgWidePull and LambdaECRImageRetrievalPolicy statements', (t) => {
   const policy = buildOrgPolicy('o-0xh5ns90gb');
 
   t.is(policy.Version, '2008-10-17');
-  t.is(policy.Statement.length, 1);
+  t.is(policy.Statement.length, 2);
 
-  const stmt = policy.Statement[0];
-  t.is(stmt.Sid, 'AllowOrgWidePull');
-  t.is(stmt.Effect, 'Allow');
-  t.is(stmt.Principal, '*');
-  t.is(stmt.Condition.StringEquals['aws:PrincipalOrgID'], 'o-0xh5ns90gb');
-  t.deepEqual(stmt.Action, [
+  const pullStmt = policy.Statement.find((s) => s.Sid === 'AllowOrgWidePull');
+  t.truthy(pullStmt);
+  t.is(pullStmt.Effect, 'Allow');
+  t.is(pullStmt.Principal, '*');
+  t.is(pullStmt.Condition.StringEquals['aws:PrincipalOrgID'], 'o-0xh5ns90gb');
+  t.deepEqual(pullStmt.Action, [
     'ecr:BatchCheckLayerAvailability',
     'ecr:BatchGetImage',
     'ecr:GetDownloadUrlForLayer',
   ]);
+
+  const lambdaStmt = policy.Statement.find((s) => s.Sid === 'LambdaECRImageRetrievalPolicy');
+  t.truthy(lambdaStmt);
+  t.is(lambdaStmt.Effect, 'Allow');
+  t.is(lambdaStmt.Principal.Service, 'lambda.amazonaws.com');
+  t.is(lambdaStmt.Condition.StringEquals['aws:PrincipalOrgID'], 'o-0xh5ns90gb');
 });
 
 test('buildOrgPolicy uses the org-id passed in, not a hardcoded value', (t) => {
@@ -141,9 +147,17 @@ test('executeGitHubAction applies org-wide policy when allow-org-pull=true', asy
   t.truthy(policyCall, 'SetRepositoryPolicyCommand was called');
 
   const policy = JSON.parse(policyCall[0].input.policyText);
-  t.is(policy.Statement[0].Sid, 'AllowOrgWidePull');
-  t.is(policy.Statement[0].Condition.StringEquals['aws:PrincipalOrgID'], 'o-0xh5ns90gb');
-  t.is(policy.Statement[0].Principal, '*');
+  t.is(policy.Statement.length, 2);
+
+  const pullStmt = policy.Statement.find((s) => s.Sid === 'AllowOrgWidePull');
+  t.truthy(pullStmt);
+  t.is(pullStmt.Condition.StringEquals['aws:PrincipalOrgID'], 'o-0xh5ns90gb');
+  t.is(pullStmt.Principal, '*');
+
+  const lambdaStmt = policy.Statement.find((s) => s.Sid === 'LambdaECRImageRetrievalPolicy');
+  t.truthy(lambdaStmt);
+  t.is(lambdaStmt.Principal.Service, 'lambda.amazonaws.com');
+  t.is(lambdaStmt.Condition.StringEquals['aws:PrincipalOrgID'], 'o-0xh5ns90gb');
 });
 
 test('executeGitHubAction applies per-account policy when allow-org-pull=false', async (t) => {

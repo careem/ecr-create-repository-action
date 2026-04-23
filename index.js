@@ -75,6 +75,23 @@ const buildOrgPolicy = (orgId) => ({
           "aws:PrincipalOrgID": orgId
         }
       }
+    },
+    {
+      "Sid": "LambdaECRImageRetrievalPolicy",
+      "Effect": "Allow",
+      "Principal": { "Service": "lambda.amazonaws.com" },
+      "Action": [
+        "ecr:BatchGetImage",
+        "ecr:DeleteRepositoryPolicy",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetRepositoryPolicy",
+        "ecr:SetRepositoryPolicy"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalOrgID": orgId
+        }
+      }
     }
   ]
 });
