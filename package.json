@@ -24,7 +24,7 @@
     "@aws-sdk/client-ecr": "3.267.0"
   },
   "devDependencies": {
-    "@vercel/ncc": "0.25.1",
+    "@vercel/ncc": "^0.38.4",
     "ava": "3.13.0",
     "nyc": "15.1.0",
     "proxyquire": "^2.1.3",
