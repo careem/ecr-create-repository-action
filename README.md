@@ -29,6 +29,7 @@ A custom name can set with the property `ecr-name`.
           ecr-name: my-custom-ecr-repo-name
 ```
 
+
 ### Usual usage example
 
 This is mostly copy and paste-able example for common use case:
