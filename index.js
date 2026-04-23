@@ -157,7 +157,9 @@ const updateRepositoryPolicyIfRequired = async (repoName, pullAccountIds, allowO
 }
 
 module.exports = {
-  executeGitHubAction: executeGitHubAction
+  executeGitHubAction,
+  buildOrgPolicy,
+  buildAccountPolicy,
 };
 
 /* istanbul ignore if */
