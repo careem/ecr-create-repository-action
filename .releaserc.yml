@@ -1,0 +1,10 @@
+---
+branches:
+  - main
+repositoryUrl: https://github.com/careem/ecr-create-repository-action
+plugins:
+  - "@semantic-release/commit-analyzer"
+  - "@semantic-release/release-notes-generator"
+  - "@semantic-release/github"
+  - - "@semantic-release/exec"
+    - prepareCmd: 'echo "new-tag=${nextRelease.version}" >> "$GITHUB_ENV"'

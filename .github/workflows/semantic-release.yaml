@@ -1,0 +1,11 @@
+---
+name: Release semantic-release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  semantic-release:
+    uses: careem/shared-workflows/.github/workflows/semantic-release.yaml@master
+    secrets: inherit
