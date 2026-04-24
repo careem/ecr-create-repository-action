@@ -11,9 +11,21 @@ inputs:
     required: false
   pull-account-ids:
     description: >
-      AWS Account Ids with access to pull images
+      AWS Account Ids with access to pull images.
       If not provided, no cross account policy is created.
-    required: true
+      Ignored when allow-org-pull is true.
+    required: false
+  allow-org-pull:
+    description: >
+      If true, grants pull access to all principals in the AWS Organization
+      instead of enumerating pull-account-ids. Mutually exclusive with pull-account-ids.
+    required: false
+    default: 'false'
+  org-id:
+    description: >
+      AWS Organization ID used when allow-org-pull is true (e.g. o-0xh5ns90gb).
+      Required when allow-org-pull is true.
+    required: false
 outputs:
   ecr-name:
     description: The name of the ECR repository. Same as `ecr-name` in inputs.
